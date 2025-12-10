@@ -83,15 +83,19 @@ public class Main {
 
     static void getContact() {
         IO.println("Search: ");
-        String name = scanner.next();
+        String name = scanner.nextLine().toLowerCase();
         ArrayList<Contact> contacts = contact.getContact();
+        boolean found = false;
+
         for (Contact c : contacts) {
-            if (c.getName().equalsIgnoreCase(name)) {
+            if (c.getName().toLowerCase().contains(name)) {
                 IO.println(c.toString());
-                return;
+                found = true;
             }
         }
-        IO.println("Contact not found.");
+        if (!found) {
+            IO.println("Contact not found.");
+        }
     }
 
     static void listContacts() {
@@ -102,10 +106,10 @@ public class Main {
     }
 
     static void getContactByMobile() {
+        ArrayList<Contact> contacts = contact.getContact();
         IO.println("Enter mobile number: ");
         int number = scanner.nextInt();
         scanner.nextLine();
-        ArrayList<Contact> contacts = contact.getContact();
         for (Contact person : contacts) {
             if (person.getMobile() == number) {
                 IO.println("\n" + person);
