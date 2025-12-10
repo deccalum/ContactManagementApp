@@ -3,6 +3,9 @@ package se.lexicon;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
@@ -30,16 +33,18 @@ public class Main {
                     listContacts();
                     break;
                 case 5:
-                    randomizeContacts();
+                    createCSV();
                     break;
                 case 6:
+                    randomizeContacts();
+                    break;
+                case 7:
                     isRun = false;
                     break;
                 default:
                     IO.println("Wrong Input");
             }
         } while (isRun);
-
     }
 
     static void menu() {
@@ -48,8 +53,9 @@ public class Main {
         IO.println(" 2- Search Contact: ");
         IO.println(" 3- Search Contact by Number: ");
         IO.println(" 4- List All Contacts: ");
-        IO.println(" 5- Randomize Contacts: ");
-        IO.println(" 6- Exit: ");
+        IO.println(" 5- Export Contacts to CSV: ");
+        IO.println(" 6- Randomize Contacts: ");
+        IO.println(" 7- Exit: ");
         IO.println("\n Choose an option: ");
     }
 
@@ -58,33 +64,21 @@ public class Main {
         String name = scanner.nextLine();
 
         IO.println("Enter mobile number: ");
-        int mobile = scanner.nextInt();
-        scanner.nextLine(); // add invalid check later
-
-        if (mobileExists(mobile)) {
-            IO.println("Number already exists.");
+        int mobile;
+        if (!scanner.hasNextInt()) {
+            IO.println("Invalid mobile number format. Not a number.");
+            scanner.nextLine();
             return;
         }
-
-        int id = contact.getContact().size() + 1;
-        contact.addContact(new Contact(id, name, mobile));
-        IO.println("Contact saved! ");
-    }
-
-    static boolean mobileExists(int mobile) {
-        ArrayList<Contact> contacts = contact.getContact();
-        for (Contact c : contacts) {
-            if (c.getMobile() == mobile) {
-                return true;
-            }
-        }
-        return false;
+        mobile = scanner.nextInt();
+        scanner.nextLine();
+        contact.addContact(name, mobile);
     }
 
     static void getContact() {
         IO.println("Search: ");
         String name = scanner.nextLine().toLowerCase();
-        ArrayList<Contact> contacts = contact.getContact();
+        ArrayList<Contact> contacts = contact.getContactList();
         boolean found = false;
 
         for (Contact c : contacts) {
@@ -99,14 +93,14 @@ public class Main {
     }
 
     static void listContacts() {
-        ArrayList<Contact> contacts = contact.getContact();
+        ArrayList<Contact> contacts = contact.getContactList();
         for (Contact c : contacts) {
             IO.println(c.toString());
         }
     }
 
     static void getContactByMobile() {
-        ArrayList<Contact> contacts = contact.getContact();
+        ArrayList<Contact> contacts = contact.getContactList();
         IO.println("Enter mobile number: ");
         int number = scanner.nextInt();
         scanner.nextLine();
@@ -121,27 +115,62 @@ public class Main {
     static void randomizeContacts() {
 
         String[] names = { "Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace", "Hannah", "Ian", "Jack" };
-
         Random random = new Random();
 
-        IO.println("How many random contacts do you want to create?");
+        IO.println("How many times to random contacts?");
+        if (!scanner.hasNextInt()) {
+            IO.println("Invalid input. Not a number.");
+            scanner.nextLine();
+            return;
+        }
         int count = scanner.nextInt();
+        scanner.nextLine();
 
         for (int i = 0; i < count; i++) {
-            // Generate random name
+            // generate random name from namearray
             int randomIndex = random.nextInt(names.length);
             String randomName = names[randomIndex];
 
-            // Generate random mobile number (e.g., between 1000000 and 9999999)
+            // generate random mobile number
             int randomMobile = random.nextInt(9000000) + 1000000;
 
-            // Create new contact and add to list
-            int id = contact.getContact().size() + 1;
-            contact.addContact(new Contact(id, randomName, randomMobile));
-
-            IO.println("Added random contact: " + randomName + " - " + randomMobile);
+            // create new contact from random data
+            int id = contact.getContactList().size() + 1;
+            contact.addContact(randomName, randomMobile);
         }
 
-        IO.println("Total contacts: " + contact.getContact().size());
+        IO.println("Total contacts: " + contact.getContactList().size());
+    }
+
+    static void createCSV() {
+        // name and path
+        String fileName = "Contacts.csv";
+        ArrayList<Contact> contacts = contact.getContactList();
+
+        /*
+         * try-with-resources: File operations throw IOException. Java requires you to
+         * explicitly handle these exceptions (either with a try-catch block or by
+         * throwing the exception further up).
+         */
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write("ID,Name,Mobile");
+            writer.newLine();
+            for (Contact c : contacts) {
+                writer.write(c.getId() + "," + c.getName() + "," + c.getMobile() + "\n");
+            }
+            IO.println("\nContacts exported to " + fileName + "\n");
+        } catch (IOException e) {
+            IO.println("Error writing to file: " + e.getMessage() + "\n");
+        }
     }
 }
+
+/*
+ * TODOS
+ * add string input aceptance for various phone number formats
+ * read from file to populate contact list on startup
+ * add edit contact functionality
+ * add delete contact functionality
+ * add validation for name input (no numbers or special characters)
+ */
