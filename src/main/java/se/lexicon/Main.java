@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
@@ -33,12 +34,15 @@ public class Main {
                     listContacts();
                     break;
                 case 5:
-                    createCSV();
+                    deleteContact();
                     break;
                 case 6:
-                    randomizeContacts();
+                    createCSV();
                     break;
                 case 7:
+                    randomizeContacts();
+                    break;
+                case 8:
                     isRun = false;
                     break;
                 default:
@@ -53,9 +57,10 @@ public class Main {
         IO.println(" 2- Search Contact: ");
         IO.println(" 3- Search Contact by Number: ");
         IO.println(" 4- List All Contacts: ");
-        IO.println(" 5- Export Contacts to CSV: ");
-        IO.println(" 6- Randomize Contacts: ");
-        IO.println(" 7- Exit: ");
+        IO.println(" 5- Delete Contact: ");
+        IO.println(" 6- Export Contacts to CSV: ");
+        IO.println(" 7- Randomize Contacts: ");
+        IO.println(" 8- Exit: ");
         IO.println("\n Choose an option: ");
     }
 
@@ -96,6 +101,44 @@ public class Main {
         ArrayList<Contact> contacts = contact.getContactList();
         for (Contact c : contacts) {
             IO.println(c.toString());
+        }
+    }
+
+    static void deleteContact() {
+        IO.println("Delete by [1] ID or [2] Mobile number?");
+        int input = scanner.nextInt();
+        if (input != 1 && input != 2) {
+            IO.println("Invalid option.");
+            scanner.nextLine();
+            return;
+        }
+        
+        int contactIDorMobile = scanner.nextInt();
+        ArrayList<Contact> contacts = contact.getContactList();
+        if (input == 1) {
+            IO.println("Enter contact ID to delete: ");
+            for (int i = 0; i < contacts.size(); i++) {
+                IO.println("Enter contact ID to delete: ");
+                Contact c = contacts.get(i);
+                if (c.getId() == contactIDorMobile) {
+                    contacts.remove(i);
+                    IO.println("Contact deleted: " + c);
+                    return;
+                }
+            }
+            IO.println("Contact not found.");
+            return;
+        } else {
+            IO.println("Enter mobile number to delete: ");
+            for (int i = 0; i < contacts.size(); i++) {
+                Contact c = contacts.get(i);
+                if (c.getMobile() == contactIDorMobile) {
+                    contacts.remove(i);
+                    IO.println("Contact deleted: " + c);
+                    return;
+                }
+            }
+            IO.println("Contact not found.");
         }
     }
 

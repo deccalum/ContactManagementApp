@@ -89,16 +89,7 @@ public class Contact {
 }
 
 /*notes
-When you use ArrayList.contains(someObject)
-or any collection method that checks for existence,
-Java needs a way to decide if the object
-you are asking about
-is already
-in the
-list.It does this
-using the
-concept of equality
-
+When you use ArrayList.contains(someObject) or any collection method that checks for existence, Java needs a way to decide if the object you are asking about is already in the list. It does this using the concept of equality
 By default, without any special instructions from you, Java uses reference equality (the == operator). This simply asks: "Are these two variables pointing to the exact same spot in the computer's memory?"
 
     new Contact(1, "A", 123) is stored at Memory Address X.
@@ -106,13 +97,8 @@ By default, without any special instructions from you, Java uses reference equal
 
 Even though they contain identical data, Address X is not Address Y. The default contains() method would say these two are not equal.
 In your addContact(String name, int mobile) method in the previous turn, you create a new object inside the method:
-java
 
 // Inside the manager's addContact method
 Contact newContact = new Contact(newId, name, mobile); 
 contactsList.add(newContact);
-
-Använd koden med försiktighet.
-You never tried to use contactsList.contains(newContact) because you implemented the mobileExists() check separately.
-
  */
